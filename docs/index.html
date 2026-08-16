@@ -1,0 +1,223 @@
+﻿<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J4 0.1 | Dokumentace</title>
+    <!-- Moderní font a ikony -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- BOČNÍ PANEL (Sidebar) -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fa-solid fa-industry"></i> J4 0.1</h2>
+            <span class="badge badge-dev">PROTOTYP</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#" id="link-dokumenty" onclick="switchView('view-dokumenty', this)">
+                <i class="fa-solid fa-file-lines"></i> Všechny dokumenty
+            </a>
+            <a href="#" id="link-archiv" class="active" onclick="switchView('view-archiv', this)">
+                <i class="fa-solid fa-folder-open"></i> Archiv dokumentů
+            </a>
+            <a href="#" id="link-prehled" onclick="switchView('view-prehled', this)">
+                <i class="fa-solid fa-chart-line"></i> Přehled zakázek
+            </a>
+            <a href="#" id="link-nastaveni" onclick="switchView('view-nastaveni', this)">
+                <i class="fa-solid fa-cog"></i> Nastavení
+            </a>
+        </nav>
+
+        <!-- Přepínač rolí -->
+        <div class="role-switcher">
+            <p><strong>Simulace role:</strong></p>
+            <select id="roleSelect" onchange="changeRole()">
+                <option value="admin">Administrátor</option>
+                <option value="user">Běžný uživatel</option>
+            </select>
+        </div>
+    </aside>
+
+    <!-- HLAVNÍ OBSAH (Main) -->
+    <main class="main-content">
+        <!-- Horní lišta s vyhledáváním a uživatelem -->
+        <header class="topbar">
+            <div class="search-bar">
+                <i class="fa-solid fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Hledat výrobní příkaz nebo soubor..." onkeyup="filterTable()">
+            </div>
+            <div class="user-profile">
+                <img src="https://ui-avatars.com/api/?name=Bohdan+J&background=0256a4&color=fff" alt="User" class="avatar">
+                <span id="currentUserDisplay">Bohdan (Admin)</span>
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+
+            <!-- POHLED 1: ARCHIV -->
+            <div id="view-archiv">
+                <div class="content-header">
+                    <h1>Dokumentace k linkám</h1>
+                    <button id="btnOpenModal" class="btn btn-primary" onclick="openModal()">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Nahrát soubor
+                    </button>
+                </div>
+                <div class="card">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>Výrobní příkaz</th>
+                                <th>Stroj</th>
+                                <th>Kategorie</th>
+                                <th>Název souboru</th>
+                                <th>Datum</th>
+                                <th>Akce</th>
+                            </tr>
+                        </thead>
+                        <tbody id="documentTableBody">
+                            <!-- Generováno přes JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- POHLED 2: PŘEHLED -->
+            <div id="view-prehled" class="hidden">
+                <div class="content-header">
+                    <h1>Statistiky a přehled</h1>
+                </div>
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #e0f2fe; color: #0284c7;"><i class="fa-solid fa-file-pdf"></i></div>
+                        <div class="stat-info">
+                            <h3>Celkem dokumentů</h3>
+                            <p id="stat-total-docs">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #dcfce7; color: #16a34a;"><i class="fa-solid fa-check-circle"></i></div>
+                        <div class="stat-info">
+                            <h3>Aktivní linky</h3>
+                            <p>2</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #fef3c7; color: #d97706;"><i class="fa-solid fa-hard-drive"></i></div>
+                        <div class="stat-info">
+                            <h3>Využité místo</h3>
+                            <p>45 MB</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- POHLED 3: NASTAVENÍ -->
+            <div id="view-nastaveni" class="hidden">
+                <div class="content-header">
+                    <h1>Nastavení portálu</h1>
+                </div>
+                <div class="card setting-card">
+                    <h3>Uživatelské preference</h3>
+                    <div class="form-group toggle-group mt-md">
+                        <label>E-mailové notifikace při nahrání nového souboru</label>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <div class="form-group toggle-group mt-md">
+                        <label>Tmavý režim (Dark Mode)</label>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--border);">
+                    <button class="btn btn-primary" onclick="alert('Nastavení úspěšně uloženo!')">Uložit změny</button>
+                </div>
+            </div>
+            <!-- POHLED 4: VŠECHNY DOKUMENTY (Strom + Nedávné) -->
+            <div id="view-dokumenty" class="hidden">
+                <div class="content-header">
+                    <h1>Kompletní struktura dokumentů</h1>
+                </div>
+
+                <div class="dokumenty-layout">
+                    <!-- Levá část: Rozbalovací seznam (Accordion) -->
+                    <div class="dokumenty-main" id="accordion-container">
+                        <!-- Bude generováno přes JS -->
+                    </div>
+
+                    <!-- Pravá část: Roleta nedávných souborů -->
+                    <div class="dokumenty-sidebar">
+                        <h3><i class="fa-solid fa-clock-rotate-left"></i> Nedávno otevřené</h3>
+                        <div id="recent-files-list">
+                            <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 10px;">Zatím jste neotevřeli žádný dokument.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- VYSKAKOVACÍ OKNO PRO UPLOAD (Modal) -->
+    <div id="uploadModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Nahrát novou dokumentaci</h3>
+                <button class="close-btn" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Výrobní příkaz</label>
+                    <select id="select-prikaz">
+                        <option value="96/2026">96/2026 (Linka 131)</option>
+                        <option value="97/2026">97/2026 (Linka 142)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Zařízení / Stroj</label>
+                    <select id="select-stroj">
+                        <option value="Pec">Pec</option>
+                        <option value="Kynárna">Kynárna</option>
+                        <option value="Dělička">Dělička</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Kategorie dokumentu</label>
+                    <select id="select-kategorie">
+                        <option value="Výkresy">Výkresy (PDF/CAD)</option>
+                        <option value="Manuály">Manuály k obsluze</option>
+                        <option value="Revize">Revizní zprávy</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Vybrat soubor</label>
+                    <input type="file" id="file-input" class="file-input">
+                </div>
+
+                <!-- Progress Bar -->
+                <div id="progress-container" class="hidden">
+                    <div class="progress-info">
+                        <span>Nahrávám na server...</span>
+                        <span id="progress-percent">0%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div id="progress-bar-fill" class="progress-bar-fill"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Zrušit</button>
+                <button id="btn-upload" class="btn btn-primary" onclick="fakeUpload()">Nahrát a uložit</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
